@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.*;
@@ -68,12 +67,6 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 
 @Configuration
 public class SecurityConfiguration {
-
-	@Bean
-	@ConditionalOnProperty(name = "rp.auth.server", havingValue = "default")
-	public List<OAuthProvider> authProviders() {
-		return Collections.emptyList();
-	}
 
 	@EnableOAuth2Client
 	@Configuration
@@ -170,17 +163,7 @@ public class SecurityConfiguration {
 				.sessionManagement()
                 	.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
-					.httpBasic()
-				.and()
-					.oauth2Login()
-				.clientRegistrationRepository(clientRegistrationRepository)
-					  .authorizationEndpoint()
-						.baseUri(SSO_LOGIN_PATH)
-						  .and()
-						.userInfoEndpoint()
-						.userService(oauth2UserService())
-						  .and()
-						.successHandler(successHandler);
+					.httpBasic();
 
         CompositeFilter authCompositeFilter = new CompositeFilter();
         List<OAuth2ClientAuthenticationProcessingFilter> additionalFilters = ImmutableList.<OAuth2ClientAuthenticationProcessingFilter>builder()
